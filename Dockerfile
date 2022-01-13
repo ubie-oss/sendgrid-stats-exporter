@@ -1,18 +1,13 @@
-FROM golang:1.15.4-alpine3.12 as build
+FROM golang:1.17.6-bullseye as builder
+WORKDIR /app
+COPY go.* ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o exporter
 
-COPY ./ /go/src/github.com/chatwork/sendgrid-stats-exporter
-WORKDIR /go/src/github.com/chatwork/sendgrid-stats-exporter
-
-RUN go mod download \
-#    && go test ./... \
-    && CGO_ENABLED=0 GOOS=linux go build -o /bin/exporter
-
-FROM alpine:3.12
-
-RUN apk --no-cache add ca-certificates \
-     && addgroup exporter \
-     && adduser -S -G exporter exporter
-USER exporter
-COPY --from=build /bin/exporter /bin/exporter
-
-ENTRYPOINT [ "/bin/exporter" ]
+FROM debian:bullseye-slim
+RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        ca-certificates && \
+        rm -rf /var/lib/apt/lists/*
+COPY --from=builder /app/exporter /app/exporter
+CMD ["/app/exporter"]
