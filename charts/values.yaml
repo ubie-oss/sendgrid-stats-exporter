@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: chatwork/sendgrid-stats-exporter
+  repository: ubie-oss/sendgrid-stats-exporter
   pullPolicy: IfNotPresent
   tag: "0.0.7"
 
