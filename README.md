@@ -67,9 +67,9 @@ unsubscribes | The number of recipients who unsubscribed from your emails.
 ### Running with Docker
 
 ```
-$ docker run -d -p 9154:9154 chatwork/sendgrid-stats-exporter
+$ docker run -d -p 9154:9154 ubie-oss/sendgrid-stats-exporter
 ```
- 
+
 #### Running with `docker-compose`
 
 ```
@@ -82,7 +82,7 @@ You can check the metrics by accessing Prometheus ([http://127.0.0.1:9200]()).
 
 #### Running with `helm`
 
-https://github.com/chatwork/sendgrid-stats-exporter/tree/main/charts
+https://github.com/ubie-oss/sendgrid-stats-exporter/tree/main/charts
 
 ## Building
 

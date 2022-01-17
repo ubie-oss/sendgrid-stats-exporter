@@ -1,7 +1,7 @@
 sendgrid-stats-exporter
 ===========
 
-A Helm chart for [chatwork/sendgrid-stats-exporter](https://github.com/chatwork/sendgrid-stats-exporter).
+A Helm chart for [ubie-oss/sendgrid-stats-exporter](https://github.com/ubie-oss/sendgrid-stats-exporter).
 
 ## Installing  the Chart
 
@@ -18,11 +18,11 @@ $ helm install -f examples/override.yaml sendgrid-stats-exporter ./
 [helm-git](https://github.com/aslafy-z/helm-git) plugin is required.
 
 ```
-$ helm repo add sendgrid-stats-exporter 'git+https://github.com/chatwork/sendgrid-stats-exporter@charts?ref=0.0.8'
+$ helm repo add sendgrid-stats-exporter 'git+https://github.com/ubie-oss/sendgrid-stats-exporter@charts?ref=0.0.8'
 $ helm install -f examples/override.yaml sendgrid-stats-exporter
 ```
 
-### Test 
+### Test
 
 ```
 $ kubectl get svc
@@ -41,7 +41,7 @@ The following table lists the configurable parameters of the Sendgrid-stats-expo
 | Parameter                | Description             | Default        |
 | ------------------------ | ----------------------- | -------------- |
 | `replicaCount` | Number of replicas | `1` |
-| `image.repository` | Image repository | `"chatwork/sendgrid-stats-exporter"` |
+| `image.repository` | Image repository | `"ubie-oss/sendgrid-stats-exporter"` |
 | `image.pullPolicy` | Image pull policy | `"IfNotPresent"` |
 | `image.tag` | Image tag | `"0.0.3"` |
 | `imagePullSecrets` | Image pull secret | `[]` |
