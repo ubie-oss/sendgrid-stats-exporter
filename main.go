@@ -8,8 +8,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-kit/kit/log/level"
+	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/promlog/flag"
@@ -70,13 +71,13 @@ func main() {
 
 	collector := collector(logger)
 	prometheus.MustRegister(collector)
-	prometheus.Unregister(prometheus.NewGoCollector())
+	prometheus.Unregister(collectors.NewGoCollector())
 	registry := prometheus.NewRegistry()
 
 	if !*disableExporterMetrics {
 		registry.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
+			collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+			collectors.NewGoCollector(),
 		)
 	}
 

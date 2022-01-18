@@ -16,6 +16,8 @@ linters:
     - exhaustivestruct
     - goerr113
     - scopelint
+    - golint
+    - maligned
   fast: false
 
 linters-settings:
@@ -23,6 +25,14 @@ linters-settings:
     check-type-assertions: false
     check-blank: false
     ignore: fmt:.*,io/ioutil:^Read.*,github.com/vendor/go-kit/kit/log.Logger
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+  varnamelen:
+    ignore-names:
+      - err
+      - ch
 
 run:
   deadline: 1m
