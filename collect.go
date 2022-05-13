@@ -168,7 +168,6 @@ func (c *Collector) collectGlobalStats(ctx context.Context, ch chan<- prometheus
 		EndDate:      dateStr,
 		AggregatedBy: "day",
 	})
-
 	if err != nil {
 		return err
 	}
@@ -188,7 +187,6 @@ func (c *Collector) collectCategoryStats(ctx context.Context, ch chan<- promethe
 		AggregatedBy: "day",
 		Categories:   c.categories,
 	})
-
 	if err != nil {
 		return err
 	}
