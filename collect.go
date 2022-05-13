@@ -147,6 +147,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 	} else {
 		today = time.Now()
 	}
+
 	todayStr := today.Format("2006-01-02")
 
 	ctx := context.Background()

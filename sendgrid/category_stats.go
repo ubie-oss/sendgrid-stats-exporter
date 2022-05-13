@@ -27,6 +27,7 @@ func (c *Client) GetCategoryStats(ctx context.Context, args *GetCategoryStatsArg
 	if args.StartDate == "" {
 		return nil, errors.New("start_date is required")
 	}
+
 	if len(args.Categories) == 0 {
 		return nil, errors.New("categories must not be empty")
 	}

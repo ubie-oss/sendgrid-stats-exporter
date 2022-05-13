@@ -132,6 +132,7 @@ func main() {
 
 func sendGridCategories() []string {
 	sendGridCategories := make([]string, 0)
+
 	for _, v := range strings.Split(*sendGridCategoriesStr, ",") {
 		if len(v) > 0 {
 			sendGridCategories = append(sendGridCategories, v)

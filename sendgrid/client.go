@@ -44,6 +44,7 @@ func (c *Client) doAPIRequest(ctx context.Context, params *requestParams, out in
 	if err != nil {
 		return err
 	}
+
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.apiKey))
 
 	resp, err := c.httpClient.Do(req)
@@ -59,37 +60,41 @@ func (c *Client) doAPIRequest(ctx context.Context, params *requestParams, out in
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		c.logger.Log("error body: %s\n", string(body))
+
 		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	err = json.Unmarshal(body, out)
+
 	return err
 }
 
 func (c *Client) newRequest(ctx context.Context, params *requestParams) (*http.Request, error) {
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	u.Path = path.Join(u.Path, params.subPath)
-
-	req, err := http.NewRequest(params.method, u.String(), params.body)
+	url, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	q := req.URL.Query()
+	url.Path = path.Join(url.Path, params.subPath)
+
+	req, err := http.NewRequestWithContext(ctx, params.method, url.String(), params.body)
+	if err != nil {
+		return nil, err
+	}
+
+	query := req.URL.Query()
+
 	for k, v := range params.queries {
-		q.Add(k, v)
+		query.Add(k, v)
 	}
 
 	for k, vs := range params.arrayQueries {
 		for _, v := range vs {
-			q.Add(k, v)
+			query.Add(k, v)
 		}
 	}
 
-	req.URL.RawQuery = q.Encode()
+	req.URL.RawQuery = query.Encode()
 
 	return req, nil
 }

@@ -53,6 +53,7 @@ func (c *Client) GetGlobalStats(ctx context.Context, args *GetGlobalStatsArgumen
 			"aggregated_by": args.AggregatedBy,
 		},
 	}
+
 	var out []GlobalStat
 	if err := c.doAPIRequest(ctx, &params, &out); err != nil {
 		return nil, err
