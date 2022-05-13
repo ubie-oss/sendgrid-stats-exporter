@@ -32,10 +32,11 @@ func NewDefaultClient(apiKey string, logger log.Logger) *Client {
 }
 
 type requestParams struct {
-	method  string
-	subPath string
-	queries map[string]string
-	body    io.Reader
+	method       string
+	subPath      string
+	queries      map[string]string
+	arrayQueries map[string][]string
+	body         io.Reader
 }
 
 func (c *Client) doAPIRequest(ctx context.Context, params *requestParams, out interface{}) error {
@@ -81,6 +82,13 @@ func (c *Client) newRequest(ctx context.Context, params *requestParams) (*http.R
 	for k, v := range params.queries {
 		q.Add(k, v)
 	}
+
+	for k, vs := range params.arrayQueries {
+		for _, v := range vs {
+			q.Add(k, v)
+		}
+	}
+
 	req.URL.RawQuery = q.Encode()
 
 	return req, nil

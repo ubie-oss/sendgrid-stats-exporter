@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-type GlobalStatMetric struct {
+type StatMetric struct {
 	Blocks           int64 `json:"blocks,omitempty"`
 	BounceDrops      int64 `json:"bounce_drops,omitempty"`
 	Bounces          int64 `json:"bounces,omitempty"`
@@ -25,7 +25,7 @@ type GlobalStatMetric struct {
 }
 
 type GlobalStatMetrics struct {
-	Metrics GlobalStatMetric `json:"metrics,omitempty"`
+	Metrics StatMetric `json:"metrics,omitempty"`
 }
 
 type GlobalStat struct {
