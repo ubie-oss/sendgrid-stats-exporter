@@ -40,7 +40,7 @@ var (
 	sendGridAPIKey = kingpin.Flag(
 		"sendgrid.api-key",
 		"[Required] Set SendGrid API key",
-	).Default("secret").Envar("SENDGRID_API_KEY").String()
+	).Required().Envar("SENDGRID_API_KEY").String()
 	sendGridUserName = kingpin.Flag(
 		"sendgrid.username",
 		"[Optional] Set SendGrid username as a label for each metrics. This is for identifying multiple SendGrid users metrics.",
