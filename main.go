@@ -15,6 +15,7 @@ import (
 	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/promlog/flag"
 	"github.com/prometheus/common/version"
+	"github.com/ubie-oss/sendgrid-stats-exporter/sendgrid"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -69,7 +70,8 @@ func main() {
 
 	level.Info(logger).Log("msg", "Listening on", *listenAddress)
 
-	collector := collector(logger)
+	client := sendgrid.NewDefaultClient(*sendGridAPIKey, logger)
+	collector := NewCollector(logger, client)
 	prometheus.MustRegister(collector)
 	prometheus.Unregister(collectors.NewGoCollector())
 	registry := prometheus.NewRegistry()

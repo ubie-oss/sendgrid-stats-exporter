@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"time"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/ubie-oss/sendgrid-stats-exporter/sendgrid"
 )
 
 type Collector struct {
 	logger log.Logger
+	client *sendgrid.Client
 
 	blocks           *prometheus.Desc
 	bounceDrops      *prometheus.Desc
@@ -29,9 +32,10 @@ type Collector struct {
 	unsubscribes     *prometheus.Desc
 }
 
-func collector(logger log.Logger) *Collector {
+func NewCollector(logger log.Logger, client *sendgrid.Client) *Collector {
 	return &Collector{
 		logger: logger,
+		client: client,
 
 		blocks: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "blocks"),
@@ -142,14 +146,19 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 		today = time.Now()
 	}
 
-	statistics, err := collectByDate(today)
+	ctx := context.Background()
+	resp, err := c.client.GetGlobalStats(ctx, &sendgrid.GetGlobalStatsArguments{
+		StartDate:    today.Format("2006-01-02"),
+		EndDate:      today.Format("2006-01-02"),
+		AggregatedBy: "day",
+	})
+
 	if err != nil {
 		level.Error(c.logger).Log(err)
-
 		return
 	}
 
-	for _, stats := range statistics[0].Stats {
+	for _, stats := range resp[0].Stats {
 		ch <- prometheus.MustNewConstMetric(
 			c.blocks,
 			prometheus.GaugeValue,
