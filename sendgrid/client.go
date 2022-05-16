@@ -9,12 +9,14 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"time"
 
 	"github.com/go-kit/log"
 )
 
 const (
-	endpoint = "https://api.sendgrid.com/v3/"
+	endpoint   = "https://api.sendgrid.com/v3/"
+	apiTimeout = 10 * time.Second
 )
 
 type Client struct {
@@ -40,6 +42,10 @@ type requestParams struct {
 }
 
 func (c *Client) doAPIRequest(ctx context.Context, params *requestParams, out interface{}) error {
+	ctx, cancel := context.WithTimeout(ctx, apiTimeout)
+
+	defer cancel()
+
 	req, err := c.newRequest(ctx, params)
 	if err != nil {
 		return err

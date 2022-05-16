@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/go-kit/log"
@@ -150,21 +151,35 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	todayStr := today.Format("2006-01-02")
 
-	ctx := context.Background()
+	var waitGroup sync.WaitGroup
 
-	if err := c.collectGlobalStats(ctx, ch, todayStr); err != nil {
-		level.Error(c.logger).Log(err)
-	}
+	waitGroup.Add(1)
 
-	if len(c.categories) > 0 {
-		if err := c.collectCategoryStats(ctx, ch, todayStr); err != nil {
+	go func() {
+		defer waitGroup.Done()
+
+		if err := c.collectGlobalStats(ch, todayStr); err != nil {
 			level.Error(c.logger).Log(err)
 		}
+	}()
+
+	if len(c.categories) > 0 {
+		waitGroup.Add(1)
+
+		go func() {
+			defer waitGroup.Done()
+
+			if err := c.collectCategoryStats(ch, todayStr); err != nil {
+				level.Error(c.logger).Log(err)
+			}
+		}()
 	}
+
+	waitGroup.Wait()
 }
 
-func (c *Collector) collectGlobalStats(ctx context.Context, ch chan<- prometheus.Metric, dateStr string) error {
-	globalStats, err := c.client.GetGlobalStats(ctx, &sendgrid.GetGlobalStatsArguments{
+func (c *Collector) collectGlobalStats(ch chan<- prometheus.Metric, dateStr string) error {
+	globalStats, err := c.client.GetGlobalStats(context.Background(), &sendgrid.GetGlobalStatsArguments{
 		StartDate:    dateStr,
 		EndDate:      dateStr,
 		AggregatedBy: "day",
@@ -181,8 +196,8 @@ func (c *Collector) collectGlobalStats(ctx context.Context, ch chan<- prometheus
 	return nil
 }
 
-func (c *Collector) collectCategoryStats(ctx context.Context, ch chan<- prometheus.Metric, dateStr string) error {
-	categoryStats, err := c.client.GetCategoryStats(ctx, &sendgrid.GetCategoryStatsArguments{
+func (c *Collector) collectCategoryStats(ch chan<- prometheus.Metric, dateStr string) error {
+	categoryStats, err := c.client.GetCategoryStats(context.Background(), &sendgrid.GetCategoryStatsArguments{
 		StartDate:    dateStr,
 		EndDate:      dateStr,
 		AggregatedBy: "day",
