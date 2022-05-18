@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/promlog/flag"
 	"github.com/prometheus/common/version"
+	"github.com/ubie-oss/sendgrid-stats-exporter/sendgrid"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -40,7 +42,7 @@ var (
 	sendGridAPIKey = kingpin.Flag(
 		"sendgrid.api-key",
 		"[Required] Set SendGrid API key",
-	).Default("secret").Envar("SENDGRID_API_KEY").String()
+	).Required().Envar("SENDGRID_API_KEY").String()
 	sendGridUserName = kingpin.Flag(
 		"sendgrid.username",
 		"[Optional] Set SendGrid username as a label for each metrics. This is for identifying multiple SendGrid users metrics.",
@@ -53,6 +55,10 @@ var (
 		"sendgrid.time-offset",
 		"[Optional] Specify the offset in second from UTC as an integer.(e.g. '32400') This needs to be set along with location.",
 	).Default("0").Envar("SENDGRID_TIME_OFFSET").Int()
+	sendGridCategoriesStr = kingpin.Flag(
+		"sendgrid.categories",
+		"[Optional] Comma-separeted SendGrid categories. If specified, corresponding category stats will be collected.",
+	).Envar("SENDGRID_CATEGORIES").String()
 )
 
 func main() {
@@ -67,9 +73,13 @@ func main() {
 	level.Info(logger).Log("msg", "Starting", exporterName, "version", version.Info(), gitCommit)
 	level.Info(logger).Log("Build context", version.BuildContext())
 
+	categories := sendGridCategories()
+	level.Info(logger).Log("Target SendGrid categories:", strings.Join(categories, ", "))
+
 	level.Info(logger).Log("msg", "Listening on", *listenAddress)
 
-	collector := collector(logger)
+	client := sendgrid.NewDefaultClient(*sendGridAPIKey, logger)
+	collector := NewCollector(logger, client, categories)
 	prometheus.MustRegister(collector)
 	prometheus.Unregister(collectors.NewGoCollector())
 	registry := prometheus.NewRegistry()
@@ -118,4 +128,16 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		level.Error(logger).Log("err", err)
 	}
+}
+
+func sendGridCategories() []string {
+	sendGridCategories := make([]string, 0)
+
+	for _, v := range strings.Split(*sendGridCategoriesStr, ",") {
+		if len(v) > 0 {
+			sendGridCategories = append(sendGridCategories, v)
+		}
+	}
+
+	return sendGridCategories
 }

@@ -23,19 +23,22 @@ $ ./exporter -h
 usage: exporter [<flags>]
 
 Flags:
-  -h, --help                  Show context-sensitive help (also try --help-long and --help-man).
+  -h, --help                    Show context-sensitive help (also try --help-long and --help-man).
       --web.listen-address=":9154"
-                              Address to listen on for web interface and telemetry.
+                                Address to listen on for web interface and telemetry.
       --web.disable-exporter-metrics
-                              Exclude metrics about the exporter itself (promhttp_*, process_*, go_*).
-      --sendgrid.api-key="secret"
-                              [Required] Set SendGrid API key
-      --sendgrid.username=""  [Optional] Set SendGrid username as a label for each metrics. This is for identifying multiple SendGrid users metrics.
+                                Exclude metrics about the exporter itself (promhttp_*, process_*, go_*).
+      --sendgrid.api-key=SENDGRID.API-KEY
+                                [Required] Set SendGrid API key
+      --sendgrid.username=""    [Optional] Set SendGrid username as a label for each metrics. This is for identifying multiple SendGrid users metrics.
       --sendgrid.location=""    [Optional] Set a zone name.(e.g. 'Asia/Tokyo') The default is UTC.
       --sendgrid.time-offset=0  [Optional] Specify the offset in second from UTC as an integer.(e.g. '32400') This needs to be set along with location.
-      --log.level=info        Only log messages with the given severity or above. One of: [debug, info, warn, error]
-      --log.format=logfmt     Output format of log messages. One of: [logfmt, json]
-      --version               Show application version.
+      --sendgrid.categories=SENDGRID.CATEGORIES
+                                [Optional] Comma-separeted SendGrid categories. If specified, corresponding category stats will be collected
+      --log.level=info          Only log messages with the given severity or above. One of: [debug, info, warn, error]
+      --log.format=logfmt       Output format of log messages. One of: [logfmt, json]
+      --version                 Show application version.
+
 ```
 
 ## Endpoints

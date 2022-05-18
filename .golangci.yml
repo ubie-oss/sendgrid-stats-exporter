@@ -18,6 +18,7 @@ linters:
     - scopelint
     - golint
     - maligned
+    - exhaustruct
   fast: false
 
 linters-settings:
